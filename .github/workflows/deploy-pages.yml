@@ -37,19 +37,24 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+        env:
+          # Ensure devDependencies (e.g. vite) are installed in CI
+          NODE_ENV: development
 
       - name: Build
-        run: pnpm run build:pages
+        run: npx vite build
         env:
           NODE_ENV: production
 
       - name: Verify build output
         run: |
+          echo "Contents of dist/:"
+          ls -laR dist/ || true
           if [ ! -f dist/public/index.html ]; then
             echo "::error::Build did not produce dist/public/index.html"
             exit 1
           fi
-          echo "Build output:"
+          echo "Build output (dist/public):"
           ls -la dist/public
 
       - name: Setup Pages
